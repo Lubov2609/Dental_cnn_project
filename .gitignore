@@ -1,0 +1,30 @@
+# python
+__pycache__/
+*.pyc
+*.pyo
+
+# virtual env
+venv/
+.venv/
+
+# pytorch
+*.pt
+*.pth
+
+# dataset
+data/
+
+# logs
+logs/
+runs/
+
+# system
+.DS_Store
+Thumbs.db
+
+# jupyter
+.ipynb_checkpoints
+
+# IDE
+.vscode/
+.idea/
