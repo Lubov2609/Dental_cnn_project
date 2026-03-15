@@ -12,11 +12,30 @@ from training.trainer import train_model
 import configs.config as config
 
 
+def print_dataset_info(name, dataset, loader):
+
+    print(f"\n{name} DATASET INFO")
+    print("-" * 30)
+
+    print(f"Total images in dataset: {len(dataset)}")
+
+    print(f"Batch size: {loader.batch_size}")
+
+    print(f"Total batches per epoch: {len(loader)}")
+
+    images_per_epoch = len(loader) * loader.batch_size
+
+    print(f"Images processed per epoch (approx): {images_per_epoch}")
+
+
 def run():
 
+    # получаем список аугментаций
     train_transforms = get_train_transforms()
+
     val_transform = get_val_transform()
 
+    # создаем датасеты
     train_dataset = DentalDataset(
         "data/splits/train.csv",
         "data/processed",
@@ -29,6 +48,7 @@ def run():
         [val_transform]
     )
 
+    # создаем DataLoader
     train_loader = DataLoader(
         train_dataset,
         batch_size=config.BATCH_SIZE,
@@ -40,10 +60,21 @@ def run():
         batch_size=config.BATCH_SIZE
     )
 
+    # вывод информации о датасетах
+    print("\nDATASET STATISTICS AFTER AUGMENTATION")
+
+    print_dataset_info("TRAIN", train_dataset, train_loader)
+
+    print_dataset_info("VALIDATION", val_dataset, val_loader)
+
+    # создаем модели
     resnet = ResNetModel()
+
     custom = CustomCNN()
 
-    print("\nTraining ResNet\n")
+    print("\n==============================")
+    print("Training ResNet")
+    print("==============================")
 
     resnet_history = train_model(
         resnet,
@@ -52,7 +83,9 @@ def run():
         config
     )
 
-    print("\nTraining Custom CNN\n")
+    print("\n==============================")
+    print("Training Custom CNN")
+    print("==============================")
 
     custom_history = train_model(
         custom,
@@ -61,9 +94,12 @@ def run():
         config
     )
 
+    # берем последние метрики
     resnet_metrics = resnet_history[-1]
+
     custom_metrics = custom_history[-1]
 
+    # формируем таблицу сравнения
     table = pd.DataFrame({
 
         "Model": ["ResNet", "Custom CNN"],
@@ -89,7 +125,8 @@ def run():
         ]
     })
 
-    print("\nComparative Results\n")
+    print("\nCOMPARATIVE RESULTS\n")
+
     print(table)
 
 

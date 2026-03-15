@@ -1,26 +1,43 @@
 import torchvision.transforms as transforms
 
 
-def get_transforms():
+def get_train_transforms():
 
-    train_transform = transforms.Compose([
-
-        # transforms.Resize((768, 1536)),
-        transforms.Resize((224, 224)),
-        transforms.RandomHorizontalFlip(p=0.5),
-
-        transforms.RandomRotation(5),
-
-        transforms.ColorJitter(brightness=0.1),
-
+    base = transforms.Compose([
+        transforms.Resize((224, 448)),
         transforms.ToTensor()
     ])
 
-    val_transform = transforms.Compose([
-
-        transforms.Resize((768, 1536)),
-
+    flip = transforms.Compose([
+        transforms.Resize((224, 448)),
+        transforms.RandomHorizontalFlip(p=1.0),
         transforms.ToTensor()
     ])
 
-    return train_transform, val_transform
+    rotate = transforms.Compose([
+        transforms.Resize((224, 448)),
+        transforms.RandomRotation((5,5)),
+        transforms.ToTensor()
+    ])
+
+    brighten = transforms.Compose([
+        transforms.Resize((224, 448)),
+        transforms.ColorJitter(brightness=0.2),
+        transforms.ToTensor()
+    ])
+
+    darken = transforms.Compose([
+        transforms.Resize((224, 448)),
+        transforms.ColorJitter(brightness=0.5),
+        transforms.ToTensor()
+    ])
+
+    return [base, flip, rotate, brighten, darken]
+
+
+def get_val_transform():
+
+    return transforms.Compose([
+        transforms.Resize((224,448)),
+        transforms.ToTensor()
+    ])

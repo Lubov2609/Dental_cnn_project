@@ -1,29 +1,17 @@
 import torch.nn as nn
 from torchvision.models import resnet50, ResNet50_Weights
 
-
 class ResNetModel(nn.Module):
-
-    def __init__(self):
-
+    def __init__(self, num_classes=[2,2,5,5]):
         super().__init__()
-
-        # загрузка предобученных весов
         self.backbone = resnet50(weights=ResNet50_Weights.DEFAULT)
-
         in_features = self.backbone.fc.in_features
+        self.backbone.fc = nn.Identity()  # убираем оригинальный fc
 
-        self.backbone.fc = nn.Sequential(
-
-            nn.Linear(in_features, 128),
-
-            nn.ReLU(),
-
-            nn.Linear(128, 4),
-
-            nn.Sigmoid()
-        )
+        # отдельные fully connected слои для каждого выхода
+        self.heads = nn.ModuleList([nn.Linear(in_features, n) for n in num_classes])
 
     def forward(self, x):
-
-        return self.backbone(x)
+        x = self.backbone(x)
+        outputs = [head(x) for head in self.heads]  # список [batch, n_classes_i]
+        return outputs
