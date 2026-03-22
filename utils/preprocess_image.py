@@ -10,14 +10,15 @@ os.makedirs(PROCESSED_DIR, exist_ok=True)
 
 for file in os.listdir(RAW_DIR):
 
-   path = os.path.join(RAW_DIR, file)
+    path = os.path.join(RAW_DIR, file)
 
-   img = Image.open(path).convert("RGB")
+    # 👉 перевод в grayscale
+    img = Image.open(path).convert("L")  # L = grayscale
 
-   img = img.resize(SIZE)
+    img = img.resize(SIZE)
 
-   save_path = os.path.join(PROCESSED_DIR, file)
+    save_path = os.path.join(PROCESSED_DIR, file)
 
-   img.save(save_path)
+    img.save(save_path)
 
-print("Images processed")
+print("Images processed (grayscale)")

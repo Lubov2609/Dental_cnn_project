@@ -6,7 +6,7 @@ class CustomCNN(nn.Module):
         super().__init__()
 
         self.features = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=3, padding=1),
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),  # ← было 3
             nn.ReLU(),
             nn.MaxPool2d(2),
 
@@ -25,19 +25,18 @@ class CustomCNN(nn.Module):
 
         self.flatten = nn.Flatten()
         self.num_classes = num_classes
-        self.heads = nn.ModuleList()  # список "голов" для каждой задачи
+        self.heads = nn.ModuleList()
 
-        # временный слой для вычисления размера
         self._initialize_heads()
 
     def _initialize_heads(self):
-        # создаем dummy input для вычисления размера flatten
         with torch.no_grad():
-            dummy_input = torch.zeros(1, 3, 224, 448)  # твой размер картинок
+            dummy_input = torch.zeros(1, 1, 224, 448)  # ← было 3
             x = self.features(dummy_input)
-            in_features = x.numel()  # размер после flatten
+            in_features = x.numel()
+
         self.in_features = in_features
-        # создаем головы
+
         for n in self.num_classes:
             self.heads.append(nn.Sequential(
                 nn.Linear(self.in_features, 128),
